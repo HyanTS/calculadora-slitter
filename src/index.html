@@ -4,10 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Slitter</title>
+    
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-    <h1>Calculadora de Slitter</h1>
-    <p>Sistema em construção</p>
+    <!-- CABEÇALHO -->
+    <header>
+        <h1>Calculadora de Slitter</h1>
+        <p>Sistema em construção</p>
+        <hr />
+    </header>
+    
+    <!-- CONTEUDO -->
+    <main>
+
+        <!-- IDENTIFICACAO -->
+        <section class="identificacao">
+            <h2>Identificação da Bobina</h2>
+
+            <div>
+                <label>
+                    Cliente:
+                    <input type="text" id="cliente" placeholder="Ex.: ArcelorMittal">
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    Etiqueta:
+                    <input type="text" id="etiqueta" placeholder="Ex.: 12345">
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    Largura Real (mm):
+                    <input type="number" id="larguraReal" step="0.01" placeholder="Ex.: 1250">
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    Peso Projetado PCP (kg):
+                    <input type="text" id="pesoProjetado" placeholder="Ex.: 20000">
+                </label>
+            </div>
+
+            <h3>Modo de operação</h3>
+            <p>(Selecione apenas um)</p>
+
+            <label>
+                <input type="radio" name="modo" value="PADRAO" checked>
+                Corte Padrão
+            </label>
+
+            <label>
+                <input type="radio" name="modo" value="PERFIL">
+                Rolo p/ Perfil
+            </label>
+
+            <label>
+                <input type="radio" name="modo" value="DOIS_PROCESSOS">
+                2 Processos
+            </label>
+
+            <label>
+                <input type="radio" name="modo" value="SALDO">
+                Volta p/ Saldo
+            </label>
+            <hr />
+
+            <div id="engatesWrapper">
+                <label>
+                    Quantidade de Engates
+                    <select id="qtdEngates">
+                        <option value="1">1 Engate</option>
+                        <option value="2">2 Engates</option>
+                    </select>
+                </label>
+
+                <p>
+                    <small>
+                        Observação: Em <b>2 Processos</b> o sistema vai forçar 2 engates.
+                        Em <b>Volta p/ Saldo</b> o sistema vai forçar 1 engate.
+                    </small>
+                </p>
+            </div>
+        </section>
+
+        <hr />
+
+        <section class="engate">
+            <h2>Engate 1</h2>
+
+            <div>
+                <label>
+                    Peso Real do Engate 1 (kg)
+                    <input type="number" id="pesoEngate1" step="0.01" placeholder="Ex.: 10500">
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    <input type="checkbox" id="perfilEngate1">
+                    Rolo p/ Perfil separado (antes da pesagem)
+                </label>
+            </div>
+
+            <div>
+                <label>
+                    Largura do Perfil separado (mm)
+                    <input type="number" id="larguraPerfil1" step="0.01" placeholder="Ex.: 94" disabled>
+                </label>
+            </div>
+
+            <button type="button" id="btnAddRolo1">+ Adicionar rolo</button>
+
+            <div class="tableEngate">
+                <table id="tableRolos1">
+                    <thead>
+                        <tr>
+                        <th>Qtd</th>
+                        <th>Largura (mm)</th>
+                        <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- LINHAS DE ROLO VIA JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <p><small>Obs.: Nesta etapa a tabela é dinâmica, mas ainda não calcula pesos.</small></p>
+
+        </section>
+    </main>
 
     <script type="module" src="./main.js"></script>
 </body>

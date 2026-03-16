@@ -10,293 +10,347 @@
   </head>
   <body>
     <!-- CABEÇALHO -->
-    <header>
-      <h1>Calculadora de Slitter</h1>
-      <p>Sistema em construção</p>
-      <hr />
-    </header>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Slitter</h1>
+            <p>Sistema em construção</p>
+            <hr />
+        </header>
+    </div>
 
     <!-- CONTEUDO -->
-    <main>
-      <!-- IDENTIFICACAO -->
-      <details class="card detalhes" open>
-        <summary>
-            <div>
-            <strong>Identificação da Bobina</strong>
-            <span class="muted"> (opcional)</span>
-            </div>
-            <span class="badge" id="badgeModo">Corte Padrão</span>
-        </summary>
-
-        <div class="detalhes-conteudo">
-
-            <div class="grid-2">
-            <label>
-                Cliente
-                <input type="text" id="cliente" placeholder="Ex.: ArcelorMittal">
-            </label>
-
-            <label>
-                Etiqueta
-                <input type="text" id="etiqueta" placeholder="Ex.: 12345">
-            </label>
-            </div>
-
-            <div class="grid-2">
-            <label>
-                Largura Real (mm)
-                <input type="number" id="larguraReal" step="0.01" placeholder="Ex.: 1250">
-            </label>
-
-            <label>
-                Peso Projetado PCP (kg)
-                <input type="text" id="pesoProjetado" placeholder="Ex.: 20000">
-            </label>
-            </div>
-
-            <div class="modo-box">
-            <h3>Modo de operação</h3>
-
-            <label><input type="radio" name="modo" value="PADRAO" checked> Corte Padrão</label>
-            <label><input type="radio" name="modo" value="PERFIL"> Rolo p/ Perfil</label>
-            <label><input type="radio" name="modo" value="DOIS_PROCESSOS"> 2 Processos</label>
-            <label><input type="radio" name="modo" value="SALDO"> Volta p/ Saldo</label>
-
-            <div id="engatesWrapper" class="engatesWrapper">
-                <label>
-                Quantidade de Engates
-                <select id="qtdEngates">
-                    <option value="1">1 Engate</option>
-                    <option value="2">2 Engates</option>
+    <div class="container">
+        <main>
+            <!-- IDENTIFICACAO -->
+            <section class="card identificacao-inline">
+                <div class="campo-inline campo-cliente">
+                <label for="cliente">Cliente</label>
+                <select id="cliente">
+                    <option value="">Selecione</option>
+                    <option value="ArcelorMittal">ArcelorMittal</option>
+                    <option value="Usiminas">Usiminas</option>
+                    <option value="Maxion">Maxion</option>
+                    <option value="Outros">Outros</option>
                 </select>
-                </label>
-
-                <p class="muted" style="margin-top:8px;">
-                Em <b>2 Processos</b> força 2 engates. Em <b>Volta p/ Saldo</b> força 1 engate.
-                </p>
-            </div>
-            </div>
-
-        </div>
-    </details>
-
-      <hr />
-
-      <!-- ENGATE -->
-      <section>
-        <h2>Engate 1</h2>
-
-        <!-- LADO ESQUERDO -->
-        <div class="engateGrid">
-          <div class="engateTabela">
-            <div class="linha-topo">
-
-                <div class="card peso-card">
-                    <div class="label">Peso Real Engate 1 (kg)</div>
-                    <input type="number" id="pesoEngate1" step="0.01" placeholder="Ex.: 10500">
                 </div>
 
-                <div class="card perfil-card">
-                    <label class="perfil-check">
-                        <input type="checkbox" id="perfilEngate1">
-                        Perfil separado
-                    </label>
+                <div class="campo-inline campo-etiqueta">
+                <label for="etiqueta">Etiqueta</label>
+                <input type="text" id="etiqueta" placeholder="Ex.: 12345" />
+                </div>
 
-                    <div class="perfil-grid" id="perfilBloco1" style="display:none;">
-                        <label>
-                            Largura do Perfil (mm)
-                            <input type="number" id="larguraPerfil1" step="0.01" disabled>
-                        </label>
+                <div class="campo-inline campo-largura">
+                <label for="larguraReal">Largura real (mm)</label>
+                <input type="number" id="larguraReal" placeholder="Ex.: 1250"/>
+                </div>
 
-                        <div class="perfil-resultado">
-                            <div class="label">Peso Perfil (kg)</div>
-                            <div class="valor" id="kpiPesoPerfilLocal1">0</div>
+                <div class="campo-inline campo-engates">
+                <label for="qtdEngates">Qtd de engates</label>
+                <select id="qtdEngates">
+                    <option value="1">1 engate</option>
+                    <option value="2">2 engates</option>
+                    <option value="3">3 engates</option>
+                </select>
+                </div>
+            </section>
+
+            <hr />
+
+            <!-- ENGATE -->
+            <section id="engatesSection">
+                <div id="engatesContainer" class="engates-container">
+                    <section id="engate1Section" class="card engate-card">
+                        <h2>Engate 1</h2>
+                    
+                        <div class="card peso-card">
+                            <div class="label">Peso Real Engate 1 (kg)</div>
+                            <input type="number" id="pesoEngate1" placeholder="Ex.: 10500"/>
                         </div>
+
+                        <div class="tableEngate">
+                            <table id="tableRolos1">
+                            <thead>
+                                <tr>
+                                <th>Qtd</th>
+                                <th>Largura (mm)</th>
+                                <th>Peso Unitário (kg)</th>
+                                <th>Total (kg)</th>
+                                <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- LINHAS DE ROLO VIA JS -->
+                            </tbody>
+                            </table>
+                        </div>
+
+                        <div class="botoes-engate">
+                            <button type="button" id="btnAddRolo1">+ Adicionar rolo</button>
+                            <button type="button" id="btnLimparEngate1">Limpar Engate 1</button>
+                        </div>
+
+                        <div class="card perfil-card">
+                            <label class="perfil-check">
+                                <input type="checkbox" id="perfilEngate1" />
+                                Perfil separado
+                            </label>
+
+                            <div class="perfil-grid" id="perfilBloco1" style="display: none">
+                                <label>
+                                Largura do Perfil (mm)
+                                <input type="number" id="larguraPerfil1" disabled/>
+                                </label>
+
+                                <div class="perfil-resultado">
+                                <div class="label">Peso Perfil (kg)</div>
+                                <div class="valor" id="kpiPesoPerfilLocal1">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="engate-kpis">
+                            <h3>Indicadores</h3>
+                            <div class="kpi-grid">
+                                <div class="kpi">
+                                    <div class="label">Largura Total s/ Perfil (mm)</div>
+                                    <div class="value"><span id="kpiLarguraTotal">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Peso por mm</div>
+                                    <div class="value"><span id="kpiPesoPorMm">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Peso Engate c/ Perfil (kg)</div>
+                                    <div class="value"><span id="kpiTotalEngate">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Sucata real (kg)</div>
+                                    <div class="value"><span id="kpiSucataReal1">0</span></div>
+                                </div>
+                            </div>
+
+                            <p id="alertaEngate1" class="alerta erro" style="display: none"></p>
+                        </div>
+                    </section>
+
+                    <section id="engate2Section" class="card engate-card" style="display: none">
+                        <h2>Engate 2</h2>
+
+                        <div class="card peso-card">
+                            <div class="label">Peso Real Engate 2 (kg)</div>
+                            <input type="number" id="pesoEngate2"/>
+                        </div>
+
+                        <div class="tableEngate">
+                            <table id="tableRolos2">
+                            <thead>
+                                <tr>
+                                <th>Qtd</th>
+                                <th>Largura (mm)</th>
+                                <th>Peso Unitário (kg)</th>
+                                <th>Total (kg)</th>
+                                <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="botoes-engate">
+                            <button type="button" id="btnAddRolo2">+ Adicionar rolo</button>
+                            <button type="button" id="btnDuplicarRolos">Duplicar rolos do Engate 1</button>
+                            <button type="button" id="btnLimparEngate2">Limpar Engate 2</button>
+                        </div>
+
+                        <div class="card perfil-card">
+                            <label class="perfil-check">
+                                <input type="checkbox" id="perfilEngate2" />
+                                Perfil separado
+                            </label>
+
+                            <div class="perfil-grid" id="perfilBloco2" style="display: none">
+                                <label>
+                                    Largura do Perfil (mm)
+                                    <input type="number" id="larguraPerfil2" disabled />
+                                </label>
+
+                                <div class="perfil-resultado">
+                                <div class="label">Peso Perfil (kg)</div>
+                                <div class="valor" id="kpiPesoPerfilLocal2">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="engate-kpis">
+                            <h3>Indicadores</h3>
+
+                            <div class="kpi-grid">
+                                <div class="kpi">
+                                    <div class="label">Largura Total s/ Perfil (mm)</div>
+                                    <div class="value"><span id="kpiLarguraTotal2">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Peso por mm</div>
+                                    <div class="value"><span id="kpiPesoPorMm2">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Peso Engate c/ Perfil (kg)</div>
+                                    <div class="value"><span id="kpiTotalEngate2">0</span></div>
+                                </div>
+
+                                <div class="kpi">
+                                    <div class="label">Sucata real (kg)</div>
+                                    <div class="value"><span id="kpiSucataReal2">0</span></div>
+                                </div>
+                            </div>
+
+                        <p id="alertaEngate2" class="alerta erro" style="display: none"></p>
+                        </div>
+                    </section>
+
+                    <section id="engate3Section" class="card engate-card" style="display: none;">
+                        <h2>Engate 3</h2>
+
+                        <div class="card peso-card">
+                            <div class="label">Peso Real Engate 3 (kg)</div>
+                            <input type="number" id="pesoEngate3">
+                        </div>
+
+                        <div class="tableEngate">
+                            <table id="tableRolos3">
+                            <thead>
+                                <tr>
+                                <th>Qtd</th>
+                                <th>Largura (mm)</th>
+                                <th>Peso Unitário (kg)</th>
+                                <th>Total (kg)</th>
+                                <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="botoes-engate">
+                            <button type="button" id="btnAddRolo3">+ Adicionar rolo</button>
+                            <button type="button" id="btnDuplicarRolos3">Duplicar rolos do Engate 1</button>
+                            <button type="button" id="btnLimparEngate3">Limpar Engate 3</button>
+                        </div>
+
+                        <div class="card perfil-card">
+                            <label class="perfil-check">
+                                <input type="checkbox" id="perfilEngate3">
+                                Perfil separado
+                            </label>
+
+                            <div class="perfil-grid" id="perfilBloco3" style="display:none;">
+                            <label>
+                                Largura do Perfil (mm)
+                                <input type="number" id="larguraPerfil3" disabled>
+                            </label>
+
+                            <div class="perfil-resultado">
+                                <div class="label">Peso Perfil (kg)</div>
+                                <div class="valor" id="kpiPesoPerfilLocal3">0</div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="engate-kpis">
+                            <h3>Indicadores</h3>
+
+                            <div class="kpi-grid">
+                            <div class="kpi">
+                                <div class="label">Largura Total s/ Perfil (mm)</div>
+                                <div class="value"><span id="kpiLarguraTotal3">0</span></div>
+                            </div>
+
+                            <div class="kpi">
+                                <div class="label">Peso por mm</div>
+                                <div class="value"><span id="kpiPesoPorMm3">0</span></div>
+                            </div>
+
+                            <div class="kpi">
+                                <div class="label">Peso Engate c/ Perfil (kg)</div>
+                                <div class="value"><span id="kpiTotalEngate3">0</span></div>
+                            </div>
+
+                            <div class="kpi">
+                                <div class="label">Sucata real (kg)</div>
+                                <div class="value"><span id="kpiSucataReal3">0</span></div>
+                            </div>
+                            </div>
+
+                            <p id="alertaEngate3" class="alerta erro" style="display:none;"></p>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <hr>
+
+            <section id="acoesCalculo" class="card acoes-calculo">
+            <h2>Ações</h2>
+
+            <div class="botoes-acoes">
+                <button type="button" id="btnFinalizarCalculo">Finalizar cálculo</button>
+                <button type="button" id="btnLimparTudo">Limpar tudo</button>
+            </div>
+            </section>
+
+            <section id="painelFinalizacao" class="card painel-finalizacao" style="display:none;">
+                <div class="painel-finalizacao-topo">
+                    <div>
+                    <h2>Resumo para Cadastro</h2>
+                    <p class="muted">Confira os rolos gerados e organize a identificação para o cadastro.</p>
+                    </div>
+
+                    <button type="button" id="btnFecharFinalizacao">Fechar</button>
+                </div>
+
+                <div class="finalizacao-info">
+                    <p><strong>Cliente:</strong> <span id="finalCliente">-</span></p>
+                    <p><strong>Etiqueta:</strong> <span id="finalEtiqueta">-</span></p>
+                    <p><strong>Largura real:</strong> <span id="finalLarguraReal">-</span> mm</p>
+                    <p><strong>Qtd de engates:</strong> <span id="finalQtdEngates">-</span></p>
+                </div>
+
+                <hr />
+
+                <div class="finalizacao-grid">
+                    <div class="finalizacao-coluna" id="colunaFinalEngate1">
+                        <h3>Engate 1</h3>
+                        <div id="listaFinalEngate1" class="caixa-finalizacao"></div>
+                        <div id="listaPerfilEngate1" class="caixa-finalizacao"></div>
+                    </div>
+
+                    <div class="finalizacao-coluna" id="colunaFinalEngate2">
+                        <h3>Engate 2</h3>
+                        <div id="listaFinalEngate2" class="caixa-finalizacao"></div>                        
+                        <div id="listaPerfilEngate2" class="caixa-finalizacao"></div>
+                    </div>
+
+                    <div class="finalizacao-coluna" id="colunaFinalEngate3">
+                        <h3>Engate 3</h3>
+                        <div id="listaFinalEngate3" class="caixa-finalizacao"></div>
+                        <div id="listaPerfilEngate3" class="caixa-finalizacao"></div>
                     </div>
                 </div>
+            </section>
+        </main>
+    </div>
 
-            </div>
-
-            <div class="tableEngate">
-              <table id="tableRolos1">
-                <thead>
-                  <tr>
-                    <th>Qtd</th>
-                    <th>Largura (mm)</th>
-                    <th>Peso Unitário (kg)</th>
-                    <th>Total (kg)</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- LINHAS DE ROLO VIA JS -->
-                </tbody>
-              </table>
-            </div>
-
-            <div class="botoes-engate">
-
-                <button type="button" id="btnAddRolo1">+ Adicionar rolo</button>
-
-                <button type="button" id="btnLimparEngate1">Limpar Engate 1</button>
-            </div>
-          </div>
-
-          <!-- LADO DIREITO -->
-          <div class="engate-kpis">
-            <div class="kpi-grid">
-                <div class="kpi">
-                    <div class="label">Largura Total (mm)</div>
-                    <div class="value"><span id="kpiLarguraTotal">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Peso por mm</div>
-                    <div class="value"><span id="kpiPesoPorMm">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Peso Engate c/ Perfil (kg)</div>
-                    <div class="value"><span id="kpiTotalEngate">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Sucata real (kg)</div>
-                    <div class="value"><span id="kpiSucataReal1">0</span></div>
-                </div>
-            </div>
-            <p id="alertaEngate1" class="alerta erro" style="display:none;"></p>
-          </div>
-        </div>
-      </section>
-
-      <hr />
-
-      <section id="engate2Section" style="display: none">
-        <h2>Engate 2</h2>
-
-        <p
-          id="avisoDoisProcessos"
-          style="display: none; font-weight: bold; color: #b45309"
-        >
-          ATENÇÃO: Cálculo de Material 2 Processos - o setup do Engate 2 pode
-          ser diferente do Engate 1.
-        </p>
-
-        <div class="engateGrid">
-          <div class="engateTabela">
-            <div class="linha-topo">
-
-                <div class="card peso-card">
-                    <div class="label">Peso Real Engate 2 (kg)</div>
-                    <input type="number" id="pesoEngate2" step="0.01">
-                </div>
-
-                <div class="card perfil-card">
-                    <label class="perfil-check">
-                        <input type="checkbox" id="perfilEngate2">
-                        Perfil separado
-                    </label>
-
-                    <div class="perfil-grid" id="perfilBloco2" style="display:none;">
-                        <label>
-                            Largura do Perfil (mm)
-                            <input type="number" id="larguraPerfil2" step="0.01" disabled>
-                        </label>
-
-                        <div class="perfil-resultado">
-                            <div class="label">Peso Perfil (kg)</div>
-                            <div class="valor" id="kpiPesoPerfilLocal2">0</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="tableEngate">
-              <table id="tableRolos2">
-                <thead>
-                  <tr>
-                    <th>Qtd</th>
-                    <th>Largura (mm)</th>
-                    <th>Peso Unitário (kg)</th>
-                    <th>Total (kg)</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-            <div class="botoes-engate">
-                <button type="button" id="btnAddRolo2">+ Adicionar rolo</button>
-                <button type="button" id="btnDuplicarRolos">
-                Duplicar rolos do Engate 1
-                </button>
-                <button type="button" id="btnLimparEngate2">Limpar Engate 2</button>
-            </div>
-          </div>
-
-          <div class="engate-kpis">
-            <h3>Indicadores</h3>
-
-            <div class="kpi-grid">
-                <div class="kpi">
-                    <div class="label">Largura Total (mm)</div>
-                    <div class="value"><span id="kpiLarguraTotal2">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Peso por mm</div>
-                    <div class="value"><span id="kpiPesoPorMm2">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Peso Engate c/ Perfil (kg)</div>
-                    <div class="value"><span id="kpiTotalEngate2">0</span></div>
-                </div>
-
-                <div class="kpi">
-                    <div class="label">Sucata real (kg)</div>
-                    <div class="value"><span id="kpiSucataReal2">0</span></div>
-                </div>
-            </div>
-
-            <p id="alertaEngate2" class="alerta erro" style="display:none;"></p>
-          </div>
-        </div>
-      </section>
-
-      <section id="resumoGeral" class="card">
-        <h2>Resumo Geral</h2>
-
-        <div class="kpi-grid">
-
-            <div class="kpi">
-            <div class="label">Engate 1 (kg)</div>
-            <div class="value">
-                <span id="resumoEngate1">0</span>
-            </div>
-            </div>
-
-            <div class="kpi" id="cardResumoEngate2" style="display:none;">
-            <div class="label">Engate 2 (kg)</div>
-            <div class="value">
-                <span id="resumoEngate2">0</span>
-            </div>
-            </div>
-
-            <div class="kpi">
-            <div class="label">Total Bobina (kg)</div>
-            <div class="value" style="font-size:22px;">
-                <span id="resumoTotalBobina">0</span>
-            </div>
-            </div>
-
-        </div>
-
-        <div id="statusGeral" class="alerta" style="display:none; margin-top:12px;"></div>
-        </section>
-    </main>
+    <!-- RODAPE -->
+    <div class="container">
+        <footer class="rodape-sistema">
+            <p>Calculadora Slitter ABSA • Desenvolvido por Hyan Silva • v1.0</p>
+        </footer>
+    </div>
 
     <script type="module" src="./main.js"></script>
   </body>

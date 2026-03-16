@@ -2,35 +2,7 @@ console.log("Calculadora Slitter carregada...");
 
 let totalEngate1ComPerfil = 0;
 let totalEngate2ComPerfil = 0;
-
-/* =========================
-   MODO (radios) -> força engates
-========================= */
-function getModoSelecionado() {
-  const modoOp = document.querySelector('input[name="modo"]:checked');
-  return modoOp ? modoOp.value : "PADRAO";
-}
-
-function atualizarEngatesPorModo() {
-  const modo = getModoSelecionado();
-  const select = document.getElementById("qtdEngates");
-  if (!select) return;
-
-  if (modo === "DOIS_PROCESSOS") {
-    select.value = "2";
-    select.disabled = true;
-  } else if (modo === "SALDO") {
-    select.value = "1";
-    select.disabled = true;
-  } else {
-    select.disabled = false;
-  }
-}
-
-document.querySelectorAll('input[name="modo"]').forEach((radio) => {
-  radio.addEventListener("change", atualizarEngatesPorModo);
-});
-atualizarEngatesPorModo();
+let totalEngate3ComPerfil = 0;
 
 /* =========================
    PERFIL SEPARADO (Engate 1)
@@ -74,10 +46,10 @@ function criarLinhaRolo1() {
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td>
-      <input class="qtd" type="number" min="1" step="1" value="1" />
+      <input class="qtd" type="number" min="1" value="1" />
     </td>
     <td>
-      <input class="largura" type="number" min="0" step="0.01" value="0" />
+      <input class="largura" type="number" min="0" value="0" />
     </td>
     <td>
       <span class="pesoUnitario">0</span>
@@ -162,7 +134,13 @@ function atualizarKPIs({
 }
 
 function atualizarSucataReal(engateNumero, larguraTotalCortes, larguraPerfil, totalComPerfil) {
-  const el = document.getElementById(engateNumero === 1 ? "kpiSucataReal1" : "kpiSucataReal2");
+  const mapaIds = {
+    1: "kpiSucataReal1",
+    2: "kpiSucataReal2",
+    3: "kpiSucataReal3",
+  };
+
+  const el = document.getElementById(mapaIds[engateNumero]);
   if (!el) return;
 
   const larguraReal = Number(document.getElementById("larguraReal")?.value || 0);
@@ -275,43 +253,52 @@ document
 // primeira execução
 calcularEngate1();
 
-function atualizarVisibilidadeEngate2() {
+function atualizarVisibilidadeEngates() {
   const qtdEngates = document.getElementById("qtdEngates")?.value || "1";
+
   const section2 = document.getElementById("engate2Section");
-  if (!section2) return;
+  const section3 = document.getElementById("engate3Section");
 
-  if (qtdEngates === "2") {
-    section2.style.display = "block";
-  } else {
-    section2.style.display = "none";
+  const btnDup2 = document.getElementById("btnDuplicarRolos");
+  const btnDup3 = document.getElementById("btnDuplicarRolos3");
 
-    totalEngate2ComPerfil = 0;
-    atualizarResumoGeral();
+  if (section2) {
+    if (qtdEngates === "2" || qtdEngates === "3") {
+      section2.style.display = "flex";
+      if (btnDup2) btnDup2.style.display = "inline-block";
+    } else {
+      section2.style.display = "none";
+      totalEngate2ComPerfil = 0;
+      if (btnDup2) btnDup2.style.display = "none";
+    }
   }
 
-  // botão duplicar só quando 2 engates E modo não é 2 processos
-  const modo = getModoSelecionado();
-  const btnDup = document.getElementById("btnDuplicarRolos");
-  if (btnDup) {
-    btnDup.style.display =
-      qtdEngates === "2" && modo !== "DOIS_PROCESSOS" ? "inline-block" : "none";
+  if (section3) {
+    if (qtdEngates === "3") {
+      section3.style.display = "flex";
+      if (btnDup3) btnDup3.style.display = "inline-block";
+    } else {
+      section3.style.display = "none";
+      totalEngate3ComPerfil = 0;
+      if (btnDup3) btnDup3.style.display = "none";
+    }
   }
 
-  const aviso = document.getElementById("avisoDoisProcessos");
-  if (aviso) {
-    aviso.style.display =
-      getModoSelecionado() === "DOIS_PROCESSOS" ? "block" : "none";
-  }
+  atualizarResumoGeral();
 }
 
-document
-  .getElementById("qtdEngates")
-  ?.addEventListener("change", atualizarVisibilidadeEngate2);
-document.querySelectorAll('input[name="modo"]').forEach((radio) => {
-  radio.addEventListener("change", atualizarVisibilidadeEngate2);
-});
+document.getElementById("qtdEngates")
+  ?.addEventListener("change", () => {
 
-atualizarVisibilidadeEngate2();
+    atualizarVisibilidadeEngates();
+    atualizarLayoutEngates();
+    atualizarResumoGeral();
+
+    // rolar tela para os engates
+    setTimeout(irParaEngates, 150);
+  });
+
+atualizarVisibilidadeEngates();
 
 const perfilEngate2 = document.getElementById("perfilEngate2");
 const larguraPerfil2 = document.getElementById("larguraPerfil2");
@@ -349,8 +336,8 @@ function criarLinhaRolo2(qtd = 1, largura = 0) {
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
-    <td><input class="qtd" type="number" min="1" step="1" value="${qtd}" /></td>
-    <td><input class="largura" type="number" min="0" step="0.01" value="${largura}" /></td>
+    <td><input class="qtd" type="number" min="1" value="${qtd}" /></td>
+    <td><input class="largura" type="number" min="0" value="${largura}" /></td>
     <td><span class="pesoUnitario">0</span></td>
     <td><span class="totalLinha">0</span></td>
     <td><button type="button" class="remover">Remover</button></td>
@@ -391,7 +378,8 @@ function atualizarKPIs2({
   document.getElementById("kpiPesoPorMm2").textContent = pesoPorMm.toFixed(4);
   document.getElementById("kpiTotalEngate2").textContent =
     totalComPerfil.toFixed(2);
-  document.getElementById("kpiPesoPerfil2").textContent = pesoPerfil.toFixed(2);
+  const elPerfil2 = document.getElementById("kpiPesoPerfil2");
+  if (elPerfil2) elPerfil2.textContent = pesoPerfil.toFixed(2);
 
   if (kpiPesoPerfilLocal2) {
   kpiPesoPerfilLocal2.textContent = pesoPerfil.toFixed(2);
@@ -500,15 +488,13 @@ document
   ?.addEventListener("input", calcularEngate2);
 
 const btnDuplicarRolos = document.getElementById("btnDuplicarRolos");
+const btnDuplicarRolos3 = document.getElementById("btnDuplicarRolos3");
 
 function duplicarRolosEngate1ParaEngate2() {
-  if (getModoSelecionado() === "DOIS_PROCESSOS") return;
   if (!tbody1 || !tbody2) return;
 
-  // limpa engate 2
   tbody2.innerHTML = "";
 
-  // copia linhas do engate 1
   const linhas1 = tbody1.querySelectorAll("tr");
   linhas1.forEach((tr) => {
     const qtd = Number(tr.querySelector(".qtd")?.value || 1);
@@ -519,86 +505,29 @@ function duplicarRolosEngate1ParaEngate2() {
   calcularEngate2();
 }
 
+function duplicarRolosEngate1ParaEngate3() {
+  if (!tbody1 || !tbody3) return;
+
+  // limpa engate 3
+  tbody3.innerHTML = "";
+
+  // copia linhas do engate 1
+  const linhas1 = tbody1.querySelectorAll("tr");
+  linhas1.forEach((tr) => {
+    const qtd = Number(tr.querySelector(".qtd")?.value || 1);
+    const largura = Number(tr.querySelector(".largura")?.value || 0);
+    tbody3.appendChild(criarLinhaRolo3(qtd, largura));
+  });
+
+  calcularEngate3();
+}
+
 btnDuplicarRolos?.addEventListener("click", duplicarRolosEngate1ParaEngate2);
+btnDuplicarRolos3?.addEventListener("click", duplicarRolosEngate1ParaEngate3);
 
 function atualizarResumoGeral() {
-  const qtdEngates = document.getElementById("qtdEngates")?.value || "1";
-
-  // mostrar/ocultar linha do engate 2
-  const card2 = document.getElementById("cardResumoEngate2");
-  if (card2) card2.style.display = qtdEngates === "2" ? "block" : "none";
-
-  // atualizar valores
-  document.getElementById("resumoEngate1").textContent =
-    totalEngate1ComPerfil.toFixed(2);
-  document.getElementById("resumoEngate2").textContent =
-    totalEngate2ComPerfil.toFixed(2);
-
-  const totalBobina =
-    qtdEngates === "2"
-      ? totalEngate1ComPerfil + totalEngate2ComPerfil
-      : totalEngate1ComPerfil;
-
-  document.getElementById("resumoTotalBobina").textContent =
-    totalBobina.toFixed(2);
-
-  // status simples baseado no alerta de largura:
-  // se qualquer engate estourar largura real, status vira ERRO
-  const larguraReal = Number(
-    document.getElementById("larguraReal")?.value || 0,
-  );
-  const larguraTotal1 = Number(
-    document.getElementById("kpiLarguraTotal")?.textContent.replace(",", ".") ||
-      0,
-  );
-  const larguraTotal2 = Number(
-    document
-      .getElementById("kpiLarguraTotal2")
-      ?.textContent.replace(",", ".") || 0,
-  );
-
-  const erroLargura1 = larguraReal > 0 && larguraTotal1 > larguraReal;
-  const erroLargura2 =
-    qtdEngates === "2" && larguraReal > 0 && larguraTotal2 > larguraReal;
-
-  const status = document.getElementById("statusGeral");
-  if (!status) return;
-
-  if (erroLargura1 || erroLargura2) {
-    status.textContent = "ERRO: largura total maior que a largura real.";
-    status.style.display = "block";
-    status.classList.add("erro");
-  } else {
-    status.textContent = "OK: dentro da largura real.";
-    status.style.display = "block";
-    status.classList.remove("erro");
-  }
+  return;
 }
-
-document
-  .getElementById("qtdEngates")
-  .addEventListener("change", atualizarResumoGeral);
-
-  function atualizarBadgeModo() {
-  const badge = document.getElementById("badgeModo");
-  if (!badge) return;
-
-  const modo = getModoSelecionado();
-  const mapa = {
-    PADRAO: "Corte Padrão",
-    PERFIL: "Rolo p/ Perfil",
-    DOIS_PROCESSOS: "2 Processos",
-    SALDO: "Volta p/ Saldo",
-  };
-
-  badge.textContent = mapa[modo] || "Corte Padrão";
-}
-
-document.querySelectorAll('input[name="modo"]').forEach((radio) => {
-  radio.addEventListener("change", atualizarBadgeModo);
-});
-
-atualizarBadgeModo();
 
 function limparTabela(tbody, criarLinhaFn, calcularFn) {
   if (!tbody) return;
@@ -654,3 +583,424 @@ function limparEngate2() {
 // listeners
 document.getElementById("btnLimparEngate1")?.addEventListener("click", limparEngate1);
 document.getElementById("btnLimparEngate2")?.addEventListener("click", limparEngate2);
+
+function atualizarLayoutEngates() {
+  const qtdEngates = document.getElementById("qtdEngates")?.value || "1";
+  const container = document.getElementById("engatesContainer");
+  if (!container) return;
+
+  container.classList.remove("layout-1", "layout-2", "layout-3");
+
+  if (qtdEngates === "1") {
+    container.classList.add("layout-1");
+  } else if (qtdEngates === "2") {
+    container.classList.add("layout-2");
+  } else if (qtdEngates === "3") {
+    container.classList.add("layout-3");
+  }
+}
+
+atualizarLayoutEngates();
+
+const perfilEngate3 = document.getElementById("perfilEngate3");
+const larguraPerfil3 = document.getElementById("larguraPerfil3");
+const perfilBloco3 = document.getElementById("perfilBloco3");
+const kpiPesoPerfilLocal3 = document.getElementById("kpiPesoPerfilLocal3");
+
+if (perfilEngate3 && larguraPerfil3) {
+  perfilEngate3.addEventListener("change", () => {
+    const ativo = perfilEngate3.checked;
+
+    if (perfilBloco3) perfilBloco3.style.display = ativo ? "grid" : "none";
+
+    larguraPerfil3.disabled = !ativo;
+
+    if (!ativo) {
+      larguraPerfil3.value = "";
+      if (kpiPesoPerfilLocal3) kpiPesoPerfilLocal3.textContent = "0";
+    }
+
+    calcularEngate3();
+  });
+
+  larguraPerfil3.addEventListener("input", calcularEngate3);
+}
+
+const btnAddRolo3 = document.getElementById("btnAddRolo3");
+const tbody3 = document.querySelector("#tableRolos3 tbody");
+
+function criarLinhaRolo3(qtd = 1, largura = 0) {
+  const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td><input class="qtd" type="number" min="1" value="${qtd}" /></td>
+    <td><input class="largura" type="number" min="0" value="${largura}" /></td>
+    <td><span class="pesoUnitario">0</span></td>
+    <td><span class="totalLinha">0</span></td>
+    <td><button type="button" class="remover">Remover</button></td>
+  `;
+
+  tr.querySelector(".remover").addEventListener("click", () => {
+    tr.remove();
+    calcularEngate3();
+  });
+
+  tr.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", calcularEngate3);
+  });
+
+  return tr;
+}
+
+if (btnAddRolo3 && tbody3) {
+  btnAddRolo3.addEventListener("click", () => {
+    tbody3.appendChild(criarLinhaRolo3());
+    calcularEngate3();
+  });
+
+  if (tbody3.children.length === 0) {
+    tbody3.appendChild(criarLinhaRolo3());
+  }
+}
+
+function atualizarKPIs3({
+  larguraTotal,
+  pesoPorMm,
+  totalComPerfil,
+  pesoPerfil,
+}) {
+  document.getElementById("kpiLarguraTotal3").textContent = larguraTotal.toFixed(2);
+  document.getElementById("kpiPesoPorMm3").textContent = pesoPorMm.toFixed(4);
+  document.getElementById("kpiTotalEngate3").textContent = totalComPerfil.toFixed(2);
+
+  if (kpiPesoPerfilLocal3) {
+    kpiPesoPerfilLocal3.textContent = pesoPerfil.toFixed(2);
+  }
+
+  const larguraReal = Number(document.getElementById("larguraReal")?.value || 0);
+  const elKpiLargura = document.getElementById("kpiLarguraTotal3");
+  const elAlerta = document.getElementById("alertaEngate3");
+
+  if (elKpiLargura) elKpiLargura.style.color = "inherit";
+
+  if (elAlerta) {
+    elAlerta.textContent = "";
+    elAlerta.style.display = "none";
+  }
+
+  if (larguraReal > 0 && larguraTotal > larguraReal) {
+    if (elKpiLargura) elKpiLargura.style.color = "red";
+
+    if (elAlerta) {
+      elAlerta.textContent = "ERRO: Largura total maior que a largura real.";
+      elAlerta.style.display = "block";
+    }
+  }
+}
+
+function calcularEngate3() {
+  const section3 = document.getElementById("engate3Section");
+  if (section3 && section3.style.display === "none") return;
+
+  const pesoReal = Number(document.getElementById("pesoEngate3")?.value || 0);
+  const linhas = tbody3 ? tbody3.querySelectorAll("tr") : [];
+
+  let larguraTotal = 0;
+
+  linhas.forEach((tr) => {
+    const qtd = Number(tr.querySelector(".qtd")?.value || 0);
+    const largura = Number(tr.querySelector(".largura")?.value || 0);
+    larguraTotal += qtd * largura;
+  });
+
+  if (pesoReal <= 0 || larguraTotal <= 0) {
+    linhas.forEach((tr) => {
+      tr.querySelector(".pesoUnitario").textContent = "0";
+      tr.querySelector(".totalLinha").textContent = "0";
+    });
+
+    totalEngate3ComPerfil = 0;
+    atualizarResumoGeral();
+    atualizarSucataReal(3, larguraTotal, 0, 0);
+
+    atualizarKPIs3({
+      larguraTotal,
+      pesoPorMm: 0,
+      totalComPerfil: 0,
+      pesoPerfil: 0,
+    });
+    return;
+  }
+
+  const pesoPorMm = pesoReal / larguraTotal;
+
+  let totalSemPerfil = 0;
+  linhas.forEach((tr) => {
+    const qtd = Number(tr.querySelector(".qtd")?.value || 0);
+    const largura = Number(tr.querySelector(".largura")?.value || 0);
+
+    const pesoUnitario = largura * pesoPorMm;
+    const totalLinha = qtd * pesoUnitario;
+    totalSemPerfil += totalLinha;
+
+    tr.querySelector(".pesoUnitario").textContent = pesoUnitario.toFixed(2);
+    tr.querySelector(".totalLinha").textContent = totalLinha.toFixed(2);
+  });
+
+  const perfilMarcado = Boolean(document.getElementById("perfilEngate3")?.checked);
+  const larguraPerfil = Number(document.getElementById("larguraPerfil3")?.value || 0);
+
+  let pesoPerfil = 0;
+  if (perfilMarcado && larguraPerfil > 0) {
+    pesoPerfil = larguraPerfil * pesoPorMm;
+  }
+
+  const totalComPerfil = totalSemPerfil + pesoPerfil;
+
+  totalEngate3ComPerfil = totalComPerfil;
+  atualizarResumoGeral();
+
+  const larguraPerfilCalc3 = perfilMarcado ? larguraPerfil : 0;
+  atualizarSucataReal(3, larguraTotal, larguraPerfilCalc3, totalComPerfil);
+
+  atualizarKPIs3({ larguraTotal, pesoPorMm, totalComPerfil, pesoPerfil });
+}
+
+document.getElementById("pesoEngate3")?.addEventListener("input", calcularEngate3);
+document.getElementById("larguraReal")?.addEventListener("input", calcularEngate3);
+
+function limparEngate3() {
+  const peso = document.getElementById("pesoEngate3");
+  if (peso) peso.value = "";
+
+  if (perfilEngate3) {
+    perfilEngate3.checked = false;
+    perfilEngate3.dispatchEvent(new Event("change"));
+  }
+
+  limparTabela(tbody3, () => criarLinhaRolo3(1, 0), calcularEngate3);
+
+  totalEngate3ComPerfil = 0;
+  atualizarResumoGeral();
+  atualizarSucataReal(3, 0, 0, 0);
+}
+
+document.getElementById("btnLimparEngate3")?.addEventListener("click", limparEngate3);
+
+function limparTudo() {
+  limparEngate1();
+  limparEngate2();
+  limparEngate3();
+
+  const cliente = document.getElementById("cliente");
+  const etiqueta = document.getElementById("etiqueta");
+  const larguraReal = document.getElementById("larguraReal");
+  const qtdEngates = document.getElementById("qtdEngates");
+
+  if (cliente) cliente.value = "";
+  if (etiqueta) etiqueta.value = "";
+  if (larguraReal) larguraReal.value = "";
+  if (qtdEngates) qtdEngates.value = "1";
+
+  atualizarVisibilidadeEngates();
+  atualizarLayoutEngates();
+}
+
+function irParaEngates() {
+  const secao = document.getElementById("engatesContainer");
+  if (!secao) return;
+
+  secao.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+document.getElementById("btnLimparTudo")?.addEventListener("click", limparTudo);
+
+function abrirPainelFinalizacao() {
+  const painel = document.getElementById("painelFinalizacao");
+  if (!painel) return;
+
+  // infos básicas
+  const cliente = document.getElementById("cliente")?.value || "-";
+  const etiqueta = document.getElementById("etiqueta")?.value || "-";
+  const larguraReal = document.getElementById("larguraReal")?.value || "-";
+  const qtdEngates = document.getElementById("qtdEngates")?.value || "-";
+
+  atualizarLayoutPainelFinal(qtdEngates);
+  atualizarVisibilidadePainelFinal(qtdEngates);
+
+  document.getElementById("finalCliente").textContent = cliente;
+  document.getElementById("finalEtiqueta").textContent = etiqueta;
+  document.getElementById("finalLarguraReal").textContent = larguraReal;
+  document.getElementById("finalQtdEngates").textContent = qtdEngates;
+
+  // rolos por engate
+  const rolos1 = extrairRolosDoEngate("#tableRolos1 tbody");
+  const rolos2 = extrairRolosDoEngate("#tableRolos2 tbody");
+  const rolos3 = extrairRolosDoEngate("#tableRolos3 tbody");
+
+  renderizarListaFinal("listaFinalEngate1", rolos1);
+  renderizarListaFinal("listaFinalEngate2", qtdEngates === "2" || qtdEngates === "3" ? rolos2 : []);
+  renderizarListaFinal("listaFinalEngate3", qtdEngates === "3" ? rolos3 : []);
+
+  // perfis
+  const perfil1Ativo = Boolean(document.getElementById("perfilEngate1")?.checked);
+  const larguraPerfil1 = Number(document.getElementById("larguraPerfil1")?.value || 0);
+  const pesoPerfil1 = Number(document.getElementById("kpiPesoPerfilLocal1")?.textContent || 0);
+
+  const perfil2Ativo = Boolean(document.getElementById("perfilEngate2")?.checked);
+  const larguraPerfil2 = Number(document.getElementById("larguraPerfil2")?.value || 0);
+  const pesoPerfil2 = Number(document.getElementById("kpiPesoPerfilLocal2")?.textContent || 0);
+
+  const perfil3Ativo = Boolean(document.getElementById("perfilEngate3")?.checked);
+  const larguraPerfil3 = Number(document.getElementById("larguraPerfil3")?.value || 0);
+  const pesoPerfil3 = Number(document.getElementById("kpiPesoPerfilLocal3")?.textContent || 0);
+
+  renderizarPerfilFinal("listaPerfilEngate1", perfil1Ativo, larguraPerfil1, pesoPerfil1);
+  renderizarPerfilFinal("listaPerfilEngate2", perfil2Ativo, larguraPerfil2, pesoPerfil2);
+  renderizarPerfilFinal("listaPerfilEngate3", perfil3Ativo, larguraPerfil3, pesoPerfil3);
+
+  painel.style.display = "flex";
+  painel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function fecharPainelFinalizacao() {
+  const painel = document.getElementById("painelFinalizacao");
+  if (!painel) return;
+  painel.style.display = "none";
+}
+
+document.getElementById("btnFinalizarCalculo")?.addEventListener("click", abrirPainelFinalizacao);
+document.getElementById("btnFecharFinalizacao")?.addEventListener("click", fecharPainelFinalizacao);
+
+function extrairRolosDoEngate(tbodySelector) {
+  const tbody = document.querySelector(tbodySelector);
+  if (!tbody) return [];
+
+  const linhas = tbody.querySelectorAll("tr");
+  const rolos = [];
+
+  linhas.forEach((tr) => {
+    const qtd = Number(tr.querySelector(".qtd")?.value || 0);
+    const largura = Number(tr.querySelector(".largura")?.value || 0);
+    const pesoUnitario = Number(tr.querySelector(".pesoUnitario")?.textContent || 0);
+
+    for (let i = 0; i < qtd; i++) {
+      rolos.push({
+        largura,
+        peso: pesoUnitario,
+      });
+    }
+  });
+
+  return rolos;
+}
+
+function renderizarListaFinal(containerId, rolos) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!rolos.length) {
+    container.innerHTML = `<p class="muted">Nenhum rolo neste engate.</p>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <p class="muted" style="margin-bottom:8px;">
+      Total de rolos: <strong>${rolos.length}</strong>
+    </p>
+
+    <div class="lista-rolos-final">
+      ${rolos.map((rolo, index) => `
+        <div class="item-rolo-final">
+          <div class="rolo-indice">#${index + 1}</div>
+
+          <div class="campo-id">
+            <label>Identificação</label>
+            <input type="text" placeholder="001">
+          </div>
+
+          <div class="campo-info">
+            <label>Largura (mm)</label>
+            <div class="valor-fixo">${rolo.largura.toFixed(2)}</div>
+          </div>
+
+          <div class="campo-info">
+            <label>Peso (kg)</label>
+            <div class="valor-fixo">${rolo.peso.toFixed(2)}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderizarPerfilFinal(containerId, perfilAtivo, larguraPerfil, pesoPerfil) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!perfilAtivo || larguraPerfil <= 0 || pesoPerfil <= 0) {
+    container.innerHTML = `<p class="muted">Sem perfil separado.</p>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <p class="muted" style="margin-bottom:8px;">
+      Perfil separado para cadastro
+    </p>
+
+    <div class="perfil-final">
+      <div class="item-perfil-final">
+        <div class="campo-id">
+          <label>Identificação</label>
+          <input type="text" value="UDC" readonly>
+        </div>
+
+        <div class="campo-info">
+          <label>Largura (mm)</label>
+          <div class="valor-fixo">${larguraPerfil.toFixed(2)}</div>
+        </div>
+
+        <div class="campo-info">
+          <label>Peso (kg)</label>
+          <div class="valor-fixo">${pesoPerfil.toFixed(2)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function atualizarVisibilidadePainelFinal(qtdEngates) {
+  const col1 = document.getElementById("colunaFinalEngate1");
+  const col2 = document.getElementById("colunaFinalEngate2");
+  const col3 = document.getElementById("colunaFinalEngate3");
+
+  if (col1) col1.style.display = "flex";
+
+  if (col2) {
+    col2.style.display =
+      qtdEngates === "2" || qtdEngates === "3" ? "flex" : "none";
+  }
+
+  if (col3) {
+    col3.style.display =
+      qtdEngates === "3" ? "flex" : "none";
+  }
+}
+
+function atualizarLayoutPainelFinal(qtdEngates) {
+  const grid = document.querySelector(".finalizacao-grid");
+  if (!grid) return;
+
+  grid.classList.remove("layout-final-1", "layout-final-2", "layout-final-3");
+
+  if (qtdEngates === "1") {
+    grid.classList.add("layout-final-1");
+  } else if (qtdEngates === "2") {
+    grid.classList.add("layout-final-2");
+  } else if (qtdEngates === "3") {
+    grid.classList.add("layout-final-3");
+  }
+}

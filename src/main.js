@@ -4,6 +4,8 @@ let totalEngate1ComPerfil = 0;
 let totalEngate2ComPerfil = 0;
 let totalEngate3ComPerfil = 0;
 
+const LIMITE_SUCATA_PERCENTUAL = 3;
+
 /* =========================
    PERFIL SEPARADO (Engate 1)
 ========================= */
@@ -144,10 +146,11 @@ function atualizarSucataReal(engateNumero, larguraTotalCortes, larguraPerfil, to
   if (!el) return;
 
   const larguraReal = Number(document.getElementById("larguraReal")?.value || 0);
-
   const larguraCortada = Number(larguraTotalCortes || 0) + Number(larguraPerfil || 0);
 
-  // sem base -> zera
+  // limpa estilo
+  el.style.color = "inherit";
+
   if (larguraReal <= 0 || larguraCortada <= 0 || totalComPerfil <= 0) {
     el.textContent = "0.00";
     return;
@@ -155,9 +158,18 @@ function atualizarSucataReal(engateNumero, larguraTotalCortes, larguraPerfil, to
 
   const kgPorMm = totalComPerfil / larguraCortada;
   const larguraSucata = larguraReal - larguraCortada;
-
   const sucataKg = larguraSucata > 0 ? (larguraSucata * kgPorMm) : 0;
+
   el.textContent = sucataKg.toFixed(2);
+
+  // percentual de sucata pela largura
+  const percentualSucata = larguraReal > 0
+    ? (Math.max(0, larguraSucata) / larguraReal) * 100
+    : 0;
+
+  if (percentualSucata > LIMITE_SUCATA_PERCENTUAL) {
+    el.style.color = "#f59e0b";
+  }
 }
 
 /* =========================
@@ -194,6 +206,7 @@ function calcularEngate1() {
         totalComPerfil: 0,
         pesoPerfil: 0,
       });
+      atualizarEstadoFinalizacao();
       return;
     }
 
@@ -237,6 +250,8 @@ function calcularEngate1() {
     atualizarSucataReal(1, larguraTotal, larguraPerfilCalc1, totalComPerfil);
 
     atualizarKPIs({ larguraTotal, pesoPorMm, totalComPerfil, pesoPerfil });
+
+    atualizarEstadoFinalizacao();
   } catch (err) {
     console.error("Erro em calcularEngate1:", err);
   }
@@ -439,6 +454,7 @@ function calcularEngate2() {
       totalComPerfil: 0,
       pesoPerfil: 0,
     });
+    atualizarEstadoFinalizacao();
     return;
   }
 
@@ -478,6 +494,8 @@ function calcularEngate2() {
     atualizarSucataReal(2, larguraTotal, larguraPerfilCalc2, totalComPerfil);
 
   atualizarKPIs2({ larguraTotal, pesoPorMm, totalComPerfil, pesoPerfil });
+
+  atualizarEstadoFinalizacao();
 }
 
 document
@@ -729,6 +747,7 @@ function calcularEngate3() {
       totalComPerfil: 0,
       pesoPerfil: 0,
     });
+    atualizarEstadoFinalizacao();
     return;
   }
 
@@ -764,6 +783,8 @@ function calcularEngate3() {
   atualizarSucataReal(3, larguraTotal, larguraPerfilCalc3, totalComPerfil);
 
   atualizarKPIs3({ larguraTotal, pesoPorMm, totalComPerfil, pesoPerfil });
+
+  atualizarEstadoFinalizacao();
 }
 
 document.getElementById("pesoEngate3")?.addEventListener("input", calcularEngate3);
@@ -898,6 +919,18 @@ function extrairRolosDoEngate(tbodySelector) {
   return rolos;
 }
 
+function rolosSaoTodosIguais(rolos) {
+  if (!rolos.length) return false;
+
+  const larguraBase = rolos[0].largura;
+
+  return rolos.every((rolo) => rolo.largura === larguraBase);
+}
+
+function gerarIdentificacaoPadrao(numero) {
+  return String(numero).padStart(3, "0");
+}
+
 function renderizarListaFinal(containerId, rolos) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -907,34 +940,48 @@ function renderizarListaFinal(containerId, rolos) {
     return;
   }
 
+  const todosIguais = rolosSaoTodosIguais(rolos);
+
   container.innerHTML = `
     <p class="muted" style="margin-bottom:8px;">
       Total de rolos: <strong>${rolos.length}</strong>
     </p>
 
     <div class="lista-rolos-final">
-      ${rolos.map((rolo, index) => `
-        <div class="item-rolo-final">
-          <div class="rolo-indice">#${index + 1}</div>
+      ${rolos.map((rolo, index) => {
+        const valorInicial = todosIguais ? gerarIdentificacaoPadrao(index + 1) : "";
+        const placeholder = todosIguais ? "" : "###";
 
-          <div class="campo-id">
-            <label>Identificação</label>
-            <input type="text" placeholder="001">
-          </div>
+        return `
+          <div class="item-rolo-final">
+            <div class="rolo-indice">#${index + 1}</div>
 
-          <div class="campo-info">
-            <label>Largura (mm)</label>
-            <div class="valor-fixo">${rolo.largura.toFixed(2)}</div>
-          </div>
+            <div class="campo-id">
+              <label>Identificação</label>
+              <input type="text" value="${valorInicial}" placeholder="${placeholder}">
+            </div>
 
-          <div class="campo-info">
-            <label>Peso (kg)</label>
-            <div class="valor-fixo">${rolo.peso.toFixed(2)}</div>
+            <div class="campo-info">
+              <label>Largura (mm)</label>
+              <div class="valor-fixo">${rolo.largura.toFixed(2)}</div>
+            </div>
+
+            <div class="campo-info">
+              <label>Peso (kg)</label>
+              <div class="valor-fixo">${rolo.peso.toFixed(2)}</div>
+            </div>
           </div>
-        </div>
-      `).join("")}
+        `;
+      }).join("")}
     </div>
   `;
+
+  // listener por blur
+  container.querySelectorAll(".campo-id input").forEach((input) => {
+    input.addEventListener("blur", () => {
+      ordenarListaFinal(container);
+    });
+  });
 }
 
 function renderizarPerfilFinal(containerId, perfilAtivo, larguraPerfil, pesoPerfil) {
@@ -1003,4 +1050,74 @@ function atualizarLayoutPainelFinal(qtdEngates) {
   } else if (qtdEngates === "3") {
     grid.classList.add("layout-final-3");
   }
+}
+
+function atualizarEstadoFinalizacao() {
+  const btnFinalizar = document.getElementById("btnFinalizarCalculo");
+  const mensagem = document.getElementById("mensagemFinalizacao");
+  const larguraReal = Number(document.getElementById("larguraReal")?.value || 0);
+  const qtdEngates = document.getElementById("qtdEngates")?.value || "1";
+
+  if (!btnFinalizar || !mensagem) return;
+
+  const largura1 = Number(document.getElementById("kpiLarguraTotal")?.textContent || 0);
+  const largura2 = Number(document.getElementById("kpiLarguraTotal2")?.textContent || 0);
+  const largura3 = Number(document.getElementById("kpiLarguraTotal3")?.textContent || 0);
+
+  const erro1 = larguraReal > 0 && largura1 > larguraReal;
+  const erro2 = (qtdEngates === "2" || qtdEngates === "3") && larguraReal > 0 && largura2 > larguraReal;
+  const erro3 = qtdEngates === "3" && larguraReal > 0 && largura3 > larguraReal;
+
+  const temErro = erro1 || erro2 || erro3;
+
+  btnFinalizar.disabled = temErro;
+
+  if (temErro) {
+    mensagem.textContent = "Corrija os erros de largura para finalizar o cálculo.";
+  } else {
+    mensagem.textContent = "";
+  }
+}
+
+function ordenarListaFinal(container) {
+  if (!container) return;
+
+  const lista = container.querySelector(".lista-rolos-final");
+  if (!lista) return;
+
+  const itens = Array.from(lista.querySelectorAll(".item-rolo-final"));
+
+  itens.sort((a, b) => {
+    const inputA = a.querySelector(".campo-id input");
+    const inputB = b.querySelector(".campo-id input");
+
+    const valorA = inputA ? inputA.value.trim() : "";
+    const valorB = inputB ? inputB.value.trim() : "";
+
+    // vazios vão para o final
+    if (!valorA && !valorB) return 0;
+    if (!valorA) return 1;
+    if (!valorB) return -1;
+
+    const numA = parseInt(valorA, 10);
+    const numB = parseInt(valorB, 10);
+
+    // se ambos forem números válidos, ordena numericamente
+    if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+      return numA - numB;
+    }
+
+    // fallback textual
+    return valorA.localeCompare(valorB, "pt-BR");
+  });
+
+  // reanexa na nova ordem
+  itens.forEach((item) => lista.appendChild(item));
+
+  // atualiza índice visual
+  const itensOrdenados = lista.querySelectorAll(".item-rolo-final");
+  itensOrdenados.forEach((item, index) => {
+    const indice = item.querySelector(".rolo-indice");
+    if (indice) indice.textContent = `#${index + 1}`;
+  });
 }

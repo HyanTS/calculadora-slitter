@@ -1,22 +1,20 @@
 :root {
-  --bg: #0b1220;
-  --surface: #0f172a;
-  --surface-2: #111c36;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --border: rgba(255, 255, 255, 0.08);
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --primary: #182445;
+  --primary-soft: rgba(24, 36, 69, 0.25);
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: rgba(15, 23, 42, 0.10);
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   --ok: #16a34a;
   --warn: #f59e0b;
   --err: #ef4444;
 }
 
 body {
-  background: radial-gradient(
-    1200px 600px at 10% 0%,
-    #182445 0%,
-    var(--bg) 55%
-  );
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
   color: var(--text);
   font-family:
     system-ui,
@@ -44,6 +42,7 @@ header h1 {
   font-size: 26px;
   letter-spacing: 0.2px;
   margin-bottom: 4px;
+  color: var(--primary);
 }
 
 header p {
@@ -52,7 +51,7 @@ header p {
 
 hr {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--primary-soft);
   margin: 12px 0;
 }
 
@@ -60,7 +59,7 @@ hr {
 section,
 .card {
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary);
   border-radius: 14px;
   padding: 18px;
   box-shadow: var(--shadow);
@@ -69,6 +68,7 @@ section,
 h2 {
   font-size: 18px;
   margin-bottom: 12px;
+  color: var(--primary);
 }
 
 h3 {
@@ -92,8 +92,8 @@ select {
   margin-top: 6px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--primary-soft);
+  background: #ffffff;
   color: var(--text);
   outline: none;
 }
@@ -109,10 +109,16 @@ input[type="checkbox"] {
   margin-right: 6px;
 }
 
+input:focus,
+select:focus{
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(24, 36, 69, 0.15);
+}
+
 /* Buttons */
 button {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 1px solid var(--primary-soft);
   color: var(--text);
   padding: 10px 12px;
   border-radius: 10px;
@@ -123,7 +129,7 @@ button {
 }
 
 button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f1f5f9;
 }
 
 button:active {
@@ -139,8 +145,8 @@ button:active {
 
 /* KPIs como cards */
 .engate-kpis{
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--border);
+  background: #f8fafc;
+  border: 1px solid var(--primary);
   border-radius: 14px;
   padding: 14px;
 }
@@ -152,8 +158,8 @@ button:active {
 }
 
 .kpi {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 1px solid var(--primary-soft);
   border-radius: 12px;
   padding: 10px;
 }
@@ -174,7 +180,7 @@ button:active {
   margin-top: 10px;
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary);
 }
 
 table {
@@ -189,12 +195,12 @@ thead th {
   color: var(--muted);
   background: rgba(255, 255, 255, 0.03);
   padding: 10px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--primary-soft);
 }
 
 tbody td {
   padding: 10px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--primary-soft);
 }
 
 tbody tr:hover {
@@ -207,13 +213,13 @@ tbody tr:hover {
   font-weight: 700;
   border-radius: 12px;
   padding: 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary-soft);
 }
 
 .alerta.erro {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #fecaca;
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
 }
 
 .muted {
@@ -245,23 +251,8 @@ tbody tr:hover {
   margin-bottom: 10px;
 }
 
-.modo-box {
-  margin-top: 6px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-
 .engatesWrapper {
   margin-top: 10px;
-}
-
-/* badge do modo */
-.badge {
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .linha-topo {
@@ -274,7 +265,7 @@ tbody tr:hover {
 
 .perfil-box {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary);
   border-radius: 12px;
   padding: 10px;
 }
@@ -319,8 +310,8 @@ tbody tr:hover {
 }
 
 .perfil-resultado {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
+  background: #f8fafc;
+  border: 1px solid var(--primary-soft);
   border-radius: 10px;
   padding: 8px;
   text-align: center;
@@ -381,6 +372,7 @@ tbody tr:hover {
   gap: 14px;
   min-width: 0;
   width: 100%;
+  border: 1px solid var(--primary);
 }
 
 /* 1 engate */
@@ -391,8 +383,8 @@ tbody tr:hover {
 
 /* 2 engates */
 .engates-container.layout-2{
-  grid-template-columns: repeat(2, minmax(900x, 900px));
-  max-width: 900px;
+  grid-template-columns: repeat(2, minmax(720px, 720px));
+  max-width: 720px;
 }
 
 /* 3 engates */
@@ -423,7 +415,7 @@ tbody tr:hover {
   text-align: center;
   color: var(--muted);
   font-size: 13px;
-  border-top: 1px solid var(--border);
+  background: transparent;
 }
 
 .painel-finalizacao{
@@ -459,8 +451,8 @@ tbody tr:hover {
 }
 
 .finalizacao-grid.layout-final-2{
-  grid-template-columns: repeat(2, minmax(900px, 900px));
-  max-width: 900px;
+  grid-template-columns: repeat(2, minmax(720px, 720px));
+  max-width: 720px;
 }
 
 .finalizacao-grid.layout-final-3{
@@ -476,8 +468,8 @@ tbody tr:hover {
 
 .caixa-finalizacao{
   min-height: 80px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--border);
+  background: #f8fafc;
+  border: 1px solid var(--primary);
   border-radius: 12px;
   padding: 12px;
 }
@@ -499,9 +491,9 @@ tbody tr:hover {
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary-soft);
   border-radius: 10px;
-  background: rgba(255,255,255,.03);
+  background: #f8fafc;
 }
 
 .item-rolo-final .campo-id label,
@@ -524,9 +516,9 @@ tbody tr:hover {
 .item-rolo-final .valor-fixo,
 .item-perfil-final .valor-fixo{
   padding: 8px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary-soft);
   border-radius: 8px;
-  background: rgba(255,255,255,.04);
+  background: #f8fafc;
   text-align: center;
   font-weight: 500;
 }
@@ -549,7 +541,7 @@ tbody tr:hover {
   gap: 10px;
   align-items: end;
   padding: 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary-soft);
   border-radius: 10px;
   background: rgba(255,255,255,.03);
 }
@@ -591,6 +583,10 @@ tbody tr:hover {
   text-align: center;
 }
 
+button:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 @media (max-width: 1100px){
   .finalizacao-grid{
